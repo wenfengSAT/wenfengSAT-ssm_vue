@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wenfengSAT.modules.sys.dao.SysNoticeDao">
+   <sql id="column" >
+   		  *
+   </sql>
+   <!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.wenfengSAT.modules.sys.entity.SysNotice">
+		<id column="id" property="id" />
+		<result column="body" property="body" />
+		<result column="type" property="type" />
+		<result column="is_delete" property="isDelete" />
+		<result column="gmt_create" property="gmtCreate" />
+		<result column="gmt_modified" property="gmtModified" />
+	</resultMap>
+
+   <select id="getNotices" resultType="com.wenfengSAT.modules.sys.entity.SysNotice"
+   parameterType="com.wenfengSAT.modules.sys.entity.SysNotice"> 
+	  select 
+		  <include refid="column" />
+      from sys_notice 
+	</select>
+	
+	<select id="queryList" resultType="com.wenfengSAT.modules.sys.entity.SysNotice">
+		select * from sys_notice 
+		<where>
+			<if test="key != null and key.trim() != ''">
+				`body` like concat('%',#{key},'%')
+			</if>
+		</where>
+		order by id desc 
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from sys_notice 
+		<where>
+			<if test="key != null and key.trim() != ''">
+				`body` like concat('%',#{key},'%') 
+			</if>
+		</where>
+	</select>
+	
+	<insert id="save" parameterType="com.wenfengSAT.modules.sys.entity.SysNotice" useGeneratedKeys="true" keyProperty="id">
+		insert into sys_notice
+		(
+			`body`, 
+			`type`,
+			`is_delete`,
+			`gmt_create` 
+		)
+		values
+		(
+			#{body}, 
+			#{type},
+			#{isDelete},
+			#{gmtCreate}
+		)
+	</insert>
+	
+	<update id="update" parameterType="com.wenfengSAT.modules.sys.entity.SysNotice">
+		update sys_notice 
+		<set> 
+			<if test="body != null">`body` = #{body}, </if>
+			<if test="type != null">`type` = #{type}, </if>
+			<if test="gmtModified != null">`gmt_modified` = #{gmtModified}, </if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="deleteBatch">
+		delete from sys_notice where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<select id="queryObject" resultType="com.wenfengSAT.modules.sys.entity.SysNotice">
+		select * from sys_notice where id = #{id}
+	</select>
+	
+</mapper>

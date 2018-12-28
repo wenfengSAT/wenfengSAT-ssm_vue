@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>折线图</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/bootstrap.min.css">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/font-awesome.min.css">
+<link rel="stylesheet" href="${request.contextPath}/statics/css/main.css">
+<script src="${request.contextPath}/statics/libs/jquery.min.js"></script>
+<script src="${request.contextPath}/statics/plugins/layer/layer.js"></script>
+<script src="${request.contextPath}/statics/libs/bootstrap.min.js"></script>
+<script src="${request.contextPath}/statics/libs/vue.min.js"></script>
+<script src="${request.contextPath}/statics/plugins/echarts3/echarts.js"></script>
+</head>
+<body>
+<div id="nain">
+<div id="line" v-cloak style="width:100%;height:500px">
+</div>
+<button @click="query">改变数据</button>
+</div>
+</body>
+<script type="text/javascript">
+
+var vm = new Vue({
+	el:'#nain',
+	data:{
+		option:{
+				tooltip:{//悬浮框 鼠标悬浮时提示的信息
+					show:true
+				},
+				legend:{//图例
+					data:[ '销量' ]
+				},
+				xAxis:[{//横坐标，目录
+					type:'category',
+					data:[ "衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子", "运动鞋" ]
+				}],
+				yAxis:[{
+					type:'value'
+				}],
+				series:[{
+					"name":"销量",
+					"type":"line",
+					"data":[ 5, 20, 40, 10, 10, 20 ,60]
+					}]
+				}
+	},
+	methods: {
+		query: function () {
+			/* $.get("../../chart/line", function(result){
+				this.series = result;
+				console.log(this.series);
+			  }); */
+			$.ajax({
+				url:'../../chart/line',
+				type:'get',
+				async:false,
+				dataType:'json',
+				success:function(data){
+					vm.option.series[0].data = data.series;
+					vm.reload();
+				}
+			});
+		},
+		reload: function (event) {
+			var myChart = echarts.init(document.getElementById("line"), "macarons");
+			myChart.setOption(this.option);
+		},
+		initChart:function(){
+			
+		}
+	}
+});
+
+$(function () {
+	vm.reload();
+});
+</script>
+</html>
